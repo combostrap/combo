@@ -21,209 +21,209 @@ use dokuwiki\Menu\UserMenu;
 class FetcherRailBar extends IFetcherAbs implements IFetcherString
 {
 
-    use FetcherTraitWikiPath;
+  use FetcherTraitWikiPath;
 
-    const CANONICAL = self::NAME;
-    const NAME = "railbar";
-    const FIXED_LAYOUT = "fixed";
-    const OFFCANVAS_LAYOUT = "off-canvas";
-    const VIEWPORT_WIDTH = "viewport";
-    const LAYOUT_ATTRIBUTE = "layout";
+  const CANONICAL = self::NAME;
+  const NAME = "railbar";
+  const FIXED_LAYOUT = "fixed";
+  const OFFCANVAS_LAYOUT = "off-canvas";
+  const VIEWPORT_WIDTH = "viewport";
+  const LAYOUT_ATTRIBUTE = "layout";
+  /**
+   * Do we show the rail bar for anonymous user
+   */
+  public const CONF_PRIVATE_RAIL_BAR = "privateRailbar";
+  public const CONF_PRIVATE_RAIL_BAR_DEFAULT = 0;
+  /**
+   * When do we toggle from offcanvas to fixed railbar
+   */
+  public const CONF_BREAKPOINT_RAIL_BAR = "breakpointRailbar";
+  const BOTH_LAYOUT = "all";
+  const KNOWN_LAYOUT = [self::FIXED_LAYOUT, self::OFFCANVAS_LAYOUT, self::BOTH_LAYOUT];
+
+
+  private int $requestedViewPort;
+  private string $requestedLayout;
+
+
+  public static function createRailBar(): FetcherRailBar
+  {
+    return new FetcherRailBar();
+  }
+
+  private static function getComponentClass(): string
+  {
+    return StyleAttribute::addComboStrapSuffix(self::CANONICAL);
+  }
+
+  /**
+   * @throws ExceptionBadArgument
+   * @throws ExceptionBadSyntax
+   * @throws ExceptionNotExists
+   * @throws ExceptionNotFound
+   */
+  public function buildFromTagAttributes(TagAttributes $tagAttributes): IFetcher
+  {
     /**
-     * Do we show the rail bar for anonymous user
+     * Capture the id
      */
-    public const CONF_PRIVATE_RAIL_BAR = "privateRailbar";
-    public const CONF_PRIVATE_RAIL_BAR_DEFAULT = 0;
+    $this->buildOriginalPathFromTagAttributes($tagAttributes);
     /**
-     * When do we toggle from offcanvas to fixed railbar
+     * Capture the view port
      */
-    public const CONF_BREAKPOINT_RAIL_BAR = "breakpointRailbar";
-    const BOTH_LAYOUT = "all";
-    const KNOWN_LAYOUT = [self::FIXED_LAYOUT, self::OFFCANVAS_LAYOUT, self::BOTH_LAYOUT];
-
-
-    private int $requestedViewPort;
-    private string $requestedLayout;
-
-
-    public static function createRailBar(): FetcherRailBar
-    {
-        return new FetcherRailBar();
+    $viewPortWidth = $tagAttributes->getValueAndRemoveIfPresent(self::VIEWPORT_WIDTH);
+    if ($viewPortWidth !== null) {
+      try {
+        $this->setRequestedViewPort(DataType::toInteger($viewPortWidth));
+      } catch (ExceptionBadArgument $e) {
+        throw new ExceptionBadArgument("The viewport width is not a valid integer. Error:{$e->getMessage()}", self::CANONICAL);
+      }
     }
-
-    private static function getComponentClass(): string
-    {
-        return StyleAttribute::addComboStrapSuffix(self::CANONICAL);
-    }
-
     /**
-     * @throws ExceptionBadArgument
-     * @throws ExceptionBadSyntax
-     * @throws ExceptionNotExists
-     * @throws ExceptionNotFound
+     * Capture the layout
      */
-    public function buildFromTagAttributes(TagAttributes $tagAttributes): IFetcher
-    {
-        /**
-         * Capture the id
-         */
-        $this->buildOriginalPathFromTagAttributes($tagAttributes);
-        /**
-         * Capture the view port
-         */
-        $viewPortWidth = $tagAttributes->getValueAndRemoveIfPresent(self::VIEWPORT_WIDTH);
-        if ($viewPortWidth !== null) {
-            try {
-                $this->setRequestedViewPort(DataType::toInteger($viewPortWidth));
-            } catch (ExceptionBadArgument $e) {
-                throw new ExceptionBadArgument("The viewport width is not a valid integer. Error:{$e->getMessage()}", self::CANONICAL);
-            }
-        }
-        /**
-         * Capture the layout
-         */
-        $layout = $tagAttributes->getValueAndRemoveIfPresent(self::LAYOUT_ATTRIBUTE);
-        if ($layout !== null) {
-            try {
-                $this->setRequestedLayout($layout);
-            } catch (ExceptionBadArgument $e) {
-                throw new ExceptionBadArgument("The layout is not a valid. Error:{$e->getMessage()}", self::CANONICAL);
-            }
-        }
-        return parent::buildFromTagAttributes($tagAttributes);
+    $layout = $tagAttributes->getValueAndRemoveIfPresent(self::LAYOUT_ATTRIBUTE);
+    if ($layout !== null) {
+      try {
+        $this->setRequestedLayout($layout);
+      } catch (ExceptionBadArgument $e) {
+        throw new ExceptionBadArgument("The layout is not a valid. Error:{$e->getMessage()}", self::CANONICAL);
+      }
+    }
+    return parent::buildFromTagAttributes($tagAttributes);
+  }
+
+
+  function getFetchPath(): Path
+  {
+    throw new ExceptionRuntimeInternal("No fetch path: Railbar is not a file but a dynamic HTML document");
+  }
+
+  function getFetchString(): string
+  {
+
+    if (!$this->shouldBePrinted()) {
+      return "";
+    }
+
+    $localWikiRequest = null;
+    $localWikiId = null;
+    try {
+      ExecutionContext::getExecutionContext();
+    } catch (ExceptionNotFound $e) {
+
+      /**
+       * No actual request (called via ajax)
+       */
+      $localWikiId = $this->getSourcePath()->getWikiId();
+      $localWikiRequest = ExecutionContext::getOrCreateFromRequestedWikiId($localWikiId);
+
+      /**
+       * page info is needed and used by all other plugins
+       * in all hooks (should be first)
+       */
+      global $INFO;
+      $INFO = pageinfo();
+
+      /**
+       * Uses by {@link action_plugin_move_rename} to set
+       * if it will add the button
+       */
+      $tmp = array();
+      \dokuwiki\Extension\Event::createAndTrigger('DOKUWIKI_STARTED', $tmp);
+
     }
 
 
-    function getFetchPath(): Path
-    {
-        throw new ExceptionRuntimeInternal("No fetch path: Railbar is not a file but a dynamic HTML document");
-    }
+    try {
 
-    function getFetchString(): string
-    {
-
-        if (!$this->shouldBePrinted()) {
-            return "";
-        }
-
-        $localWikiRequest = null;
-        $localWikiId = null;
-        try {
-            ExecutionContext::getExecutionContext();
-        } catch (ExceptionNotFound $e) {
-
-            /**
-             * No actual request (called via ajax)
-             */
-            $localWikiId = $this->getSourcePath()->getWikiId();
-            $localWikiRequest = ExecutionContext::getOrCreateFromRequestedWikiId($localWikiId);
-
-            /**
-             * page info is needed and used by all other plugins
-             * in all hooks (should be first)
-             */
-            global $INFO;
-            $INFO = pageinfo();
-
-            /**
-             * Uses by {@link action_plugin_move_rename} to set
-             * if it will add the button
-             */
-            $tmp = array();
-            \dokuwiki\Extension\Event::createAndTrigger('DOKUWIKI_STARTED', $tmp);
-
-        }
+      $snippetManager = SnippetSystem::getFromContext();
+      $railBarHtmlListItems = $this->getRailBarHtmlListItems();
+      $railBarLayout = $this->getLayoutTypeToApply();
+      switch ($railBarLayout) {
+        case self::FIXED_LAYOUT:
+          $railBar = $this->toFixedLayout($railBarHtmlListItems);
+          $snippetManager->attachCssInternalStylesheet("railbar-$railBarLayout");
+          break;
+        case self::OFFCANVAS_LAYOUT:
+          $railBar = $this->toOffCanvasLayout($railBarHtmlListItems);
+          $snippetManager->attachCssInternalStylesheet("railbar-$railBarLayout");
+          break;
+        case self::BOTH_LAYOUT:
+        default:
+          $snippetManager->attachCssInternalStylesheet("railbar-" . self::FIXED_LAYOUT);
+          $snippetManager->attachCssInternalStylesheet("railbar-" . self::OFFCANVAS_LAYOUT);
+          $breakpoint = $this->getBreakPointConfiguration();
+          $railBar = $this->toFixedLayout($railBarHtmlListItems, $breakpoint)
+            . $this->toOffCanvasLayout($railBarHtmlListItems, $breakpoint);
+          break;
+      }
 
 
-        try {
+      $snippetManager->attachCssInternalStylesheet("railbar");
 
-            $snippetManager = SnippetSystem::getFromContext();
-            $railBarHtmlListItems = $this->getRailBarHtmlListItems();
-            $railBarLayout = $this->getLayoutTypeToApply();
-            switch ($railBarLayout) {
-                case self::FIXED_LAYOUT:
-                    $railBar = $this->toFixedLayout($railBarHtmlListItems);
-                    $snippetManager->attachCssInternalStylesheet("railbar-$railBarLayout");
-                    break;
-                case self::OFFCANVAS_LAYOUT:
-                    $railBar = $this->toOffCanvasLayout($railBarHtmlListItems);
-                    $snippetManager->attachCssInternalStylesheet("railbar-$railBarLayout");
-                    break;
-                case self::BOTH_LAYOUT:
-                default:
-                    $snippetManager->attachCssInternalStylesheet("railbar-" . self::FIXED_LAYOUT);
-                    $snippetManager->attachCssInternalStylesheet("railbar-" . self::OFFCANVAS_LAYOUT);
-                    $breakpoint = $this->getBreakPointConfiguration();
-                    $railBar = $this->toFixedLayout($railBarHtmlListItems, $breakpoint)
-                        . $this->toOffCanvasLayout($railBarHtmlListItems, $breakpoint);
-                    break;
-            }
-
-
-            $snippetManager->attachCssInternalStylesheet("railbar");
-
-            if ($localWikiRequest !== null) {
-                $snippets = $snippetManager->toHtmlForAllSnippets();
-                $snippetClass = self::getSnippetClass();
-                /**
-                 * Snippets should be after the html because they works
-                 * on the added HTML
-                 */
-                $railBar = <<<EOF
+      if ($localWikiRequest !== null) {
+        $snippets = $snippetManager->toHtmlForAllSnippets();
+        $snippetClass = self::getSnippetClass();
+        /**
+         * Snippets should be after the html because they works
+         * on the added HTML
+         */
+        $railBar = <<<EOF
 $railBar
 <div id="$snippetClass" class="$snippetClass">
 $snippets
 </div>
 EOF;
-            }
+      }
 
-            return $railBar;
+      return $railBar;
 
 
-        } finally {
-            if ($localWikiRequest !== null) {
-                $localWikiRequest->close($localWikiId);
-            }
-        }
-
+    } finally {
+      if ($localWikiRequest !== null) {
+        $localWikiRequest->close($localWikiId);
+      }
     }
 
-    function getBuster(): string
-    {
-        return "";
-    }
+  }
 
-    public function getMime(): Mime
-    {
-        return Mime::getHtml();
-    }
+  function getBuster(): string
+  {
+    return "";
+  }
 
-    public function getFetcherName(): string
-    {
-        return self::NAME;
-    }
+  public function getMime(): Mime
+  {
+    return Mime::getHtml();
+  }
 
-    public function setRequestedPageWikiId(string $wikiId): FetcherRailBar
-    {
-        $path = WikiPath::createMarkupPathFromId($wikiId);
-        return $this->setRequestedPath($path);
-    }
+  public function getFetcherName(): string
+  {
+    return self::NAME;
+  }
 
-    public static function getSnippetClass(): string
-    {
-        return Snippet::getClassFromComponentId(self::CANONICAL);
-    }
+  public function setRequestedPageWikiId(string $wikiId): FetcherRailBar
+  {
+    $path = WikiPath::createMarkupPathFromId($wikiId);
+    return $this->setRequestedPath($path);
+  }
 
-    private function getRailBarHtmlListItems(): string
-    {
-        $liUserTools = (new UserMenu())->getListItems('action');
-        $pageMenu = new PageMenu();
-        $liPageTools = $pageMenu->getListItems();
-        $liSiteTools = (new SiteMenu())->getListItems('action');
-        // FYI: The below code outputs all menu in mobile (in another HTML layout)
-        // echo (new \dokuwiki\Menu\MobileMenu())->getDropdown($lang['tools']);
-        $componentClass = self::getComponentClass();
-        return <<<EOF
+  public static function getSnippetClass(): string
+  {
+    return Snippet::getClassFromComponentId(self::CANONICAL);
+  }
+
+  private function getRailBarHtmlListItems(): string
+  {
+    $liUserTools = (new UserMenu())->getListItems('action');
+    $pageMenu = new PageMenu();
+    $liPageTools = $pageMenu->getListItems();
+    $liSiteTools = (new SiteMenu())->getListItems('action');
+    // FYI: The below code outputs all menu in mobile (in another HTML layout)
+    // echo (new \dokuwiki\Menu\MobileMenu())->getDropdown($lang['tools']);
+    $componentClass = self::getComponentClass();
+    return <<<EOF
 <ul class="$componentClass">
     <li><a href="#" style="height: 19px;line-height: 17px;text-align: left;font-weight:bold"><span>User</span><svg style="height:19px"></svg></a></li>
     $liUserTools
@@ -234,30 +234,38 @@ EOF;
 </ul>
 EOF;
 
-    }
+  }
 
-    private function toOffCanvasLayout(string $railBarHtmlListItems, Breakpoint $hideFromBreakpoint = null): string
-    {
-        $breakpointHiding = "";
-        if ($hideFromBreakpoint !== null) {
-            $breakpointHiding = "d-{$hideFromBreakpoint->getShortName()}-none";
-        }
-        $railBarOffCanvasPrefix = "railbar-offcanvas";
-        $railBarClass = StyleAttribute::addComboStrapSuffix(self::NAME);
-        $railBarOffCanvasClassAndId = StyleAttribute::addComboStrapSuffix($railBarOffCanvasPrefix);
-        $railBarOffCanvasWrapperId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-wrapper");
-        $railBarOffCanvasLabelId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-label");
-        $railBarOffcanvasBodyId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-body");
-        $railBarOffCanvasCloseId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-close");
-        $railBarOffCanvasOpenId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-open");
-        return <<<EOF
+  private function toOffCanvasLayout(string $railBarHtmlListItems, Breakpoint $hideFromBreakpoint = null): string
+  {
+    $breakpointHiding = "";
+    if ($hideFromBreakpoint !== null) {
+      $breakpointHiding = "d-{$hideFromBreakpoint->getShortName()}-none";
+    }
+    $railBarOffCanvasPrefix = "railbar-offcanvas";
+    $railBarClass = StyleAttribute::addComboStrapSuffix(self::NAME);
+    $railBarOffCanvasClassAndId = StyleAttribute::addComboStrapSuffix($railBarOffCanvasPrefix);
+    $railBarOffCanvasWrapperId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-wrapper");
+    $railBarOffCanvasLabelId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-label");
+    $railBarOffcanvasBodyId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-body");
+    $railBarOffCanvasCloseId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-close");
+    $railBarOffCanvasOpenId = StyleAttribute::addComboStrapSuffix("{$railBarOffCanvasPrefix}-open");
+    $bootstrapVersion = Bootstrap::getFromContext()->getVersion();
+    $offCanvasVisibilityStyleFixHidden = "";
+    if ($bootstrapVersion == Bootstrap::VERSION_501) {
+      // in version 5.0.1, the style visibility hidden is mandatory
+      // in 5.3.8 no more
+      $offCanvasVisibilityStyleFixHidden = 'style="visibility: hidden;"';
+    }
+    return <<<EOF
 <div id="$railBarOffCanvasWrapperId" class="$railBarClass $railBarOffCanvasClassAndId $breakpointHiding">
     <button id="$railBarOffCanvasOpenId" class="btn" type="button" aria-label="Open the railbar" data-bs-toggle="offcanvas"
             data-bs-target="#$railBarOffCanvasClassAndId" aria-controls="railbar-offcanvas">
     </button>
 
     <div id="$railBarOffCanvasClassAndId" class="offcanvas offcanvas-end" aria-labelledby="$railBarOffCanvasLabelId"
-         style="visibility: hidden;" aria-hidden="true">
+         $offCanvasVisibilityStyleFixHidden
+          aria-hidden="true">
          <h5 class="d-none" id="$railBarOffCanvasLabelId">Railbar</h5>
         <!-- Pseudo relative element  https://stackoverflow.com/questions/6040005/relatively-position-an-element-without-it-taking-up-space-in-document-flow -->
         <div style="position: relative; width: 0; height: 0">
@@ -270,94 +278,94 @@ EOF;
 </div>
 EOF;
 
+  }
+
+  public function getLayoutTypeToApply(): string
+  {
+
+    if (isset($this->requestedLayout)) {
+      return $this->requestedLayout;
+    }
+    $bootstrapVersion = Bootstrap::getBootStrapMajorVersion();
+    if ($bootstrapVersion === Bootstrap::BootStrapFourMajorVersion) {
+      return self::FIXED_LAYOUT;
+    }
+    try {
+      $breakPointConfigurationInPixel = $this->getBreakPointConfiguration()->getWidth();
+    } catch (ExceptionInfinite $e) {
+      // no breakpoint
+      return self::OFFCANVAS_LAYOUT;
     }
 
-    public function getLayoutTypeToApply(): string
-    {
-
-        if (isset($this->requestedLayout)) {
-            return $this->requestedLayout;
-        }
-        $bootstrapVersion = Bootstrap::getBootStrapMajorVersion();
-        if ($bootstrapVersion === Bootstrap::BootStrapFourMajorVersion) {
-            return self::FIXED_LAYOUT;
-        }
-        try {
-            $breakPointConfigurationInPixel = $this->getBreakPointConfiguration()->getWidth();
-        } catch (ExceptionInfinite $e) {
-            // no breakpoint
-            return self::OFFCANVAS_LAYOUT;
-        }
-
-        try {
-            if ($this->getRequestedViewPort() > $breakPointConfigurationInPixel) {
-                return self::FIXED_LAYOUT;
-            } else {
-                return self::OFFCANVAS_LAYOUT;
-            }
-        } catch (ExceptionNotFound $e) {
-            // no known target view port
-            // we send them both then
-            return self::BOTH_LAYOUT;
-        }
-
+    try {
+      if ($this->getRequestedViewPort() > $breakPointConfigurationInPixel) {
+        return self::FIXED_LAYOUT;
+      } else {
+        return self::OFFCANVAS_LAYOUT;
+      }
+    } catch (ExceptionNotFound $e) {
+      // no known target view port
+      // we send them both then
+      return self::BOTH_LAYOUT;
     }
 
-    public function setRequestedViewPort(int $viewPort): FetcherRailBar
-    {
-        $this->requestedViewPort = $viewPort;
-        return $this;
+  }
+
+  public function setRequestedViewPort(int $viewPort): FetcherRailBar
+  {
+    $this->requestedViewPort = $viewPort;
+    return $this;
+  }
+
+  /**
+   * The call may indicate the view port that the railbar will be used for
+   * (ie breakpoint)
+   * @return int
+   * @throws ExceptionNotFound
+   */
+  public function getRequestedViewPort(): int
+  {
+    if (!isset($this->requestedViewPort)) {
+      throw new ExceptionNotFound("No requested view port");
     }
+    return $this->requestedViewPort;
+  }
 
-    /**
-     * The call may indicate the view port that the railbar will be used for
-     * (ie breakpoint)
-     * @return int
-     * @throws ExceptionNotFound
-     */
-    public function getRequestedViewPort(): int
-    {
-        if (!isset($this->requestedViewPort)) {
-            throw new ExceptionNotFound("No requested view port");
-        }
-        return $this->requestedViewPort;
+  private function shouldBePrinted(): bool
+  {
+
+    if (
+      SiteConfig::getConfValue(self::CONF_PRIVATE_RAIL_BAR, 0) === 1
+      && !Identity::isLoggedIn()
+    ) {
+      return false;
     }
+    return true;
 
-    private function shouldBePrinted(): bool
-    {
+  }
 
-        if (
-            SiteConfig::getConfValue(self::CONF_PRIVATE_RAIL_BAR, 0) === 1
-            && !Identity::isLoggedIn()
-        ) {
-            return false;
-        }
-        return true;
+  private function getBreakPointConfiguration(): Breakpoint
+  {
+    $name = SiteConfig::getConfValue(self::CONF_BREAKPOINT_RAIL_BAR, Breakpoint::BREAKPOINT_LARGE_NAME);
+    return Breakpoint::createFromLongName($name);
+  }
 
+
+  /**
+   * @param string $railBarHtmlListItems
+   * @param Breakpoint|null $showFromBreakpoint
+   * @return string
+   */
+  private function toFixedLayout(string $railBarHtmlListItems, Breakpoint $showFromBreakpoint = null): string
+  {
+    $showFromBreakpointClasses = "";
+    if ($showFromBreakpoint !== null) {
+      $showFromBreakpointClasses = "d-none d-{$showFromBreakpoint->getShortName()}-flex";
     }
-
-    private function getBreakPointConfiguration(): Breakpoint
-    {
-        $name = SiteConfig::getConfValue(self::CONF_BREAKPOINT_RAIL_BAR, Breakpoint::BREAKPOINT_LARGE_NAME);
-        return Breakpoint::createFromLongName($name);
-    }
-
-
-    /**
-     * @param string $railBarHtmlListItems
-     * @param Breakpoint|null $showFromBreakpoint
-     * @return string
-     */
-    private function toFixedLayout(string $railBarHtmlListItems, Breakpoint $showFromBreakpoint = null): string
-    {
-        $showFromBreakpointClasses = "";
-        if ($showFromBreakpoint !== null) {
-            $showFromBreakpointClasses = "d-none d-{$showFromBreakpoint->getShortName()}-flex";
-        }
-        $railBarClass = StyleAttribute::addComboStrapSuffix(self::NAME);
-        $railBarFixedClassOrId = StyleAttribute::addComboStrapSuffix(self::NAME . "-fixed");
-        $zIndexRailbar = 1000; // A navigation bar (below the drop down because we use it in the search box for auto-completion)
-        return <<<EOF
+    $railBarClass = StyleAttribute::addComboStrapSuffix(self::NAME);
+    $railBarFixedClassOrId = StyleAttribute::addComboStrapSuffix(self::NAME . "-fixed");
+    $zIndexRailbar = 1000; // A navigation bar (below the drop down because we use it in the search box for auto-completion)
+    return <<<EOF
 <div id="$railBarFixedClassOrId" class="$railBarClass $railBarFixedClassOrId d-flex $showFromBreakpointClasses" style="z-index: $zIndexRailbar;">
     <div>
         $railBarHtmlListItems
@@ -365,33 +373,33 @@ EOF;
 </div>
 EOF;
 
-    }
+  }
 
-    /**
-     * The layout may be requested (example in a landing page where you don't want to see it)
-     * @param string $layout
-     * @return FetcherRailBar
-     * @throws ExceptionBadArgument
-     */
-    public function setRequestedLayout(string $layout): FetcherRailBar
-    {
-        if (!in_array($layout, self::KNOWN_LAYOUT)) {
-            throw new ExceptionBadArgument("The layout ($layout) is not valid. The known-layout are : ".ArrayUtility::formatAsString(self::KNOWN_LAYOUT));
-        }
-        $this->requestedLayout = $layout;
-        return $this;
+  /**
+   * The layout may be requested (example in a landing page where you don't want to see it)
+   * @param string $layout
+   * @return FetcherRailBar
+   * @throws ExceptionBadArgument
+   */
+  public function setRequestedLayout(string $layout): FetcherRailBar
+  {
+    if (!in_array($layout, self::KNOWN_LAYOUT)) {
+      throw new ExceptionBadArgument("The layout ($layout) is not valid. The known-layout are : " . ArrayUtility::formatAsString(self::KNOWN_LAYOUT));
     }
+    $this->requestedLayout = $layout;
+    return $this;
+  }
 
-    public function setRequestedPath(WikiPath $requestedPath): FetcherRailBar
-    {
-        $this->setSourcePath($requestedPath);
-        return $this;
-    }
+  public function setRequestedPath(WikiPath $requestedPath): FetcherRailBar
+  {
+    $this->setSourcePath($requestedPath);
+    return $this;
+  }
 
 
-    public function getLabel(): string
-    {
-        return self::NAME;
-    }
+  public function getLabel(): string
+  {
+    return self::NAME;
+  }
 
 }
