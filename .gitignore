@@ -8,3 +8,4 @@ dist/**
 .next/**
 phpunit-*.phar
 .yarn
+_test

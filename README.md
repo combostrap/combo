@@ -42,4 +42,4 @@ And more. Discover them at [ComboStrap](https://combostrap.com)
 
 ## Contrib
 
-See [Contrib](contrib.md)
+See [Contrib](CONTRIBUTING.md)

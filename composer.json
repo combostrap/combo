@@ -1,8 +1,8 @@
 {
     "name": "combostrap/combo",
-    "homepage": "https://combostrap.com",
+    "homepage": "https://combowiki.combostrap.com",
     "require": {
-        "php": "^7.4",
+        "php": ">=8.2",
         "dragonmantank/cron-expression": "v1.2.1",
         "hidehalo/nanoid-php": "1.1.8",
         "carica/phpcss": "2.0.0",
