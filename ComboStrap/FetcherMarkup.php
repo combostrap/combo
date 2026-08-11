@@ -471,7 +471,7 @@ class FetcherMarkup extends IFetcherAbs implements IFetcherSource, IFetcherStrin
                 try {
                     $nativeSnippets[] = Snippet::createFromJson($snippet);
                 } catch (ExceptionCompile $e) {
-                    LogUtility::error("The snippet json array cannot be build into a snippet object. " . $e->getMessage() . "\n" . ArrayUtility::formatAsString($snippet), LogUtility::SUPPORT_CANONICAL,);
+                    LogUtility::error("The snippet json array cannot be build into a snippet object. " . $e->getMessage() . "\n" . ArrayUtility::formatAsString($snippet), LogUtility::SUPPORT_CANONICAL);
                 }
             }
         }
@@ -946,7 +946,7 @@ class FetcherMarkup extends IFetcherAbs implements IFetcherSource, IFetcherStrin
              * Therefore when doing a page bundle, there is no way to set that this a standalone execution
              * Hack to not get this message with a {@link self::MARKUP_DYNAMIC_EXECUTION_NAME} inside a page bundle
              */
-            if ($_GET["do"] !== "combo_" . FetcherPageBundler::NAME) {
+            if (($_GET["do"] ?? null) !== "combo_" . FetcherPageBundler::NAME) {
                 LogUtility::warning("The execution ($this) is not a path execution. The snippet $snippet will not be preserved after initial rendering. Set the execution as standalone or set a parent markup handler.");
             }
         }

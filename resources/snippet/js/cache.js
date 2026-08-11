@@ -1,5 +1,3 @@
-
-
 window.addEventListener("DOMContentLoaded", function () {
 
 
@@ -9,7 +7,7 @@ window.addEventListener("DOMContentLoaded", function () {
                 event.preventDefault();
 
                 const combo = /** @type {import('combo.d.ts')} */ (window.combo);
-                if(!('JSINFO' in window)){
+                if (!('JSINFO' in window)) {
                     throw new Error("JSINFO is not available")
                 }
                 const JSINFO = window.JSINFO;
@@ -24,7 +22,7 @@ window.addEventListener("DOMContentLoaded", function () {
                  * Creating the form
                  */
 
-                let html = `<p>List of <a href="https://combostrap.com/page/cache">cache information</a> for the slots of the page (${pageId}).</p>`;
+                let html = `<p>List of <a href="https://combowiki.combostrap.com/page/cache">cache information</a> for the slots of the page (${pageId}).</p>`;
 
                 /**
                  * Add the page runtime cache metadata field
@@ -33,9 +31,19 @@ window.addEventListener("DOMContentLoaded", function () {
                 if (cachePageInfo !== null) {
                     let cachePageJsonString = cachePageInfo
                         .innerText
-                        .trim()
-                        .slice("/*<![CDATA[*/".length)
-                        .slice(0, -("/*!]]>*/".length));
+                        .trim();
+
+                    /**
+                     * Delete Cdata tags if present
+                     */
+                    let cdataOpenTag = "/*<![CDATA[*/";
+                    if (cachePageJsonString.startsWith(cdataOpenTag)) {
+                        cachePageJsonString = cachePageJsonString.slice(cdataOpenTag.length);
+                    }
+                    let cdataEndTag = "/*!]]>*/";
+                    if (cachePageJsonString.endsWith(cdataEndTag)) {
+                        cachePageJsonString = cachePageJsonString.slice(0, -(cdataEndTag.length));
+                    }
 
                     html += `<table class="table table-striped table-hover text-nowrap overflow-auto"><thead><th>Slot</th><th>Output</th><th>Cache <br/>Hit</th><th title="Modification time of the cache file">Modification <br/>Time</th><th>Cache Deps</th><th>Cache File</th></thead>`;
                     let cachePageJson = JSON.parse(cachePageJsonString);
@@ -72,7 +80,7 @@ window.addEventListener("DOMContentLoaded", function () {
                             let hitHtml = ` <input type="checkbox" class="form-check-input" disabled ${checkedBox}>`
                             let mtime = combo.Date.createFromIso(result["mtime"]).toSqlTimestampString();
                             let file = result["file"];
-                            let fileLabel = file.substring(file.indexOf(':') + 1, file.lastIndexOf('.') - 2);
+                            let fileLabel = file.substring(file.indexOf(':') + 1, file.lastIndexOf('.'));
                             let fileUrl = combo.DokuUrl
                                 .createFetch(file, 'cache')
                                 .toString();

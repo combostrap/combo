@@ -333,7 +333,7 @@ class renderer_plugin_combo_analytics extends Doku_Renderer
         if (empty($this->metadata[self::DESCRIPTION])) {
             $ruleResults[self::RULE_DESCRIPTION_PRESENT] = self::FAILED;
             $ruleInfo[self::RULE_DESCRIPTION_PRESENT] = "Add a description for {$descScore} points";
-            $this->metadata[self::DESCRIPTION] = $dokuWikiMetadata[self::DESCRIPTION]["abstract"];
+            $this->metadata[self::DESCRIPTION] = $dokuWikiMetadata[self::DESCRIPTION]["abstract"] ?? "";
             $qualityScores[self::RULE_DESCRIPTION_PRESENT] = 0;
         } else {
             $qualityScores[self::RULE_DESCRIPTION_PRESENT] = $descScore;

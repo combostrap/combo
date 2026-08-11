@@ -61,18 +61,16 @@ class OutlineSection extends TreeNode
                 $this->startFileIndex = $position;
             }
             $this->addHeaderCall($headingEnterCall);
-            // We persist the id for level 1 because the heading tag may be deleted
+            /**
+             * Bug in {@link \Doku_Renderer_xhtml} header method, there is 4 attributes
+             * and the 4 element may be not present
+             */
             if ($this->getLevel() === 1) {
-                /**
-                 * Bug in {@link \Doku_Renderer_xhtml} header method, there is 4 attributes
-                 * and the 4 element may be not present
-                 */
                 if ($this->headingEnterCall->getTagName() == 'header') {
                     if (count($this->headingEnterCall->getAttributes()) == 3) {
                         $this->headingEnterCall->setAttribute(3, false);
                     }
                 }
-                $this->headingEnterCall->setAttribute('id', $this->getHeadingId());
             }
         } else {
             $this->startFileIndex = 0;
@@ -169,6 +167,10 @@ class OutlineSection extends TreeNode
      */
     public function getHeadingCalls(): array
     {
+        /**
+         * Hack: On Atx Header, the content is known after
+         * This code is called at the end of the parse
+         */
         if (
             $this->headingEnterCall !== null &&
             $this->headingEnterCall->isPluginCall() &&
@@ -247,7 +249,7 @@ class OutlineSection extends TreeNode
     /**
      */
     public
-    function getHeadingId()
+    function getHeadingId(): ?string
     {
 
         if (!isset($this->headingId)) {
@@ -257,6 +259,9 @@ class OutlineSection extends TreeNode
             }
 
             $label = $this->getLabel();
+            if (blank($label)) {
+                return null;
+            }
 
             /**
              * For Level 1 (ie Heading 1), we use the path as id and not the label

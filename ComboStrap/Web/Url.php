@@ -23,6 +23,7 @@ use ComboStrap\PluginUtility;
 use ComboStrap\Site;
 use ComboStrap\WikiPath;
 use dokuwiki\Input\Input;
+use dokuwiki\Ip;
 
 /**
  * Class Url
@@ -148,13 +149,13 @@ class Url extends PathAbs
              *   * first party url
              */
             $requestHost = $_SERVER['HTTP_HOST'] ?? null;
-            if(!(
+            if (!(
                 // relative url
                 $this->host == null
                 ||
                 // first party url
                 ($requestHost != null && $this->host == $requestHost))
-            ){
+            ) {
                 $this->withRewrite = false;
             }
 
@@ -411,7 +412,14 @@ class Url extends PathAbs
             /**
              * See {@link getBaseURL()}
              */
-            if (!is_ssl()) {
+            $dateVersion = getVersionData()['date'];
+
+            if ($dateVersion >= '2026-07-14') {
+                $isSsl = Ip::isSsl();
+            } else {
+                $isSsl = is_ssl();
+            }
+            if (!$isSsl) {
                 $this->setScheme("http");
             } else {
                 $this->setScheme("https");

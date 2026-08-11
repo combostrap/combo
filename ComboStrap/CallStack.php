@@ -15,7 +15,7 @@ namespace ComboStrap;
 
 use Doku_Handler;
 use dokuwiki\Extension\SyntaxPlugin;
-use dokuwiki\Parsing\Parser;
+use dokuwiki\Parsing\ModeRegistry;
 use syntax_plugin_combo_media;
 
 /**
@@ -183,8 +183,23 @@ class CallStack
 
     public static function createEmpty(): CallStack
     {
+
         $emptyHandler = new class extends \Doku_Handler {
+
             public $calls = [];
+
+            public function __construct()
+            {
+                $dateVersion = getVersionData()['date'];
+                if ($dateVersion >= '2026-07-14') {
+                    global $conf;
+                    $registry = new ModeRegistry($conf['syntax']);
+                    parent::__construct($registry);
+                } else {
+                    parent::__construct();
+                }
+
+            }
 
             public function getCallWriter(): object
             {
@@ -535,7 +550,7 @@ class CallStack
             return false;
         }
 
-        if($this->endWasReached){
+        if ($this->endWasReached) {
             return false;
         }
 
@@ -1134,7 +1149,7 @@ class CallStack
 
     public function appendCallsAtTheEnd(array $calls)
     {
-        foreach($calls as $call){
+        foreach ($calls as $call) {
             $this->appendCallAtTheEnd($call);
         }
     }

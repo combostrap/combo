@@ -262,7 +262,7 @@ class PageImageTag
          * If the image is too small, we allow that it will stretch
          * to take the whole space
          */
-        if ($data[PluginUtility::CONTEXT] === CardTag::CARD_TAG) {
+        if (($data[PluginUtility::CONTEXT] ?? null) === CardTag::CARD_TAG) {
             $tagAttributes->addStyleDeclarationIfNotSet("max-width", "100%");
             $tagAttributes->addStyleDeclarationIfNotSet("max-height", "unset");
         }

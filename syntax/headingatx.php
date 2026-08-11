@@ -94,7 +94,7 @@ class syntax_plugin_combo_headingatx extends DokuWiki_Syntax_Plugin
              * The context is needed:
              *   * to add the bootstrap class if it's a card title for instance
              *   * and to delete {@link HeadingTag::TYPE_OUTLINE} call
-             * in the {@link action_plugin_combo_headingpostprocess} (The rendering is done via Dokuwiki,
+             * in the {@link \ComboStrap\Outline} (The rendering is done via Dokuwiki,
              * see the exit processing for more info on the handling of outline headings)
              *
              */

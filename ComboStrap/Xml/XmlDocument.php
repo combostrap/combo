@@ -161,8 +161,7 @@ class XmlDocument
              *
              * We use the trick to transform UTF-8 to HTML
              */
-            $htmlEntityEncoded = mb_convert_encoding($text, 'HTML-ENTITIES', 'UTF-8');
-            $result = $this->domDocument->loadHTML($htmlEntityEncoded, $options);
+            $result = $this->domDocument->loadHTML('<?xml encoding="utf-8" ?>' . $text, $options);
 
         }
         if ($result === false) {

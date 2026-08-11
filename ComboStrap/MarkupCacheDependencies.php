@@ -253,7 +253,7 @@ class MarkupCacheDependencies
          * We capture therefore the first actual key passed
          */
         if ($this->firstActualKey === null) {
-            $this->firstActualKey = $actualKey;
+            $this->firstActualKey = $actualKey . $this->getHostData() . "/";
         }
         $dependencyKey = $this->firstActualKey;
         $runtimeDependencies = $this->getDependencies();
@@ -312,8 +312,9 @@ class MarkupCacheDependencies
             } catch (ExceptionCast|ExceptionNotFound $e) {
                 $absoluteString = $this->markupFetcher->getRequestedExecutingPath()->toAbsoluteId();
             }
-            $keyDokuWikiCompliant = str_replace("\\", "/", $absoluteString);
-            return $keyDokuWikiCompliant . $_SERVER['HTTP_HOST'] . $_SERVER['SERVER_PORT'];
+            $keyDokuWikiCompliant = str_replace("\\", "/", $absoluteString . "/");
+
+            return $keyDokuWikiCompliant . $this->getHostData();
         } catch (ExceptionNotFound $e) {
             throw new ExceptionRuntimeInternal("No executing path to calculate the cache key");
         }
@@ -397,6 +398,11 @@ class MarkupCacheDependencies
     {
         $dependencies = $this->getDependencies();
         return in_array($dependencyName, $dependencies);
+    }
+
+    private function getHostData(): string
+    {
+        return $_SERVER['HTTP_HOST'] . $_SERVER['SERVER_PORT'];
     }
 
 }
