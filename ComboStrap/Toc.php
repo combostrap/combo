@@ -14,6 +14,7 @@ namespace ComboStrap;
 
 
 use ComboStrap\Meta\Api\Metadata;
+use ComboStrap\Meta\Store\MetadataDokuWikiStore;
 use ComboStrap\TagAttribute\StyleAttribute;
 use Doku_Renderer;
 use DokuWiki_Admin_Plugin;
@@ -26,6 +27,18 @@ class Toc extends Metadata
     const CANONICAL = syntax_plugin_combo_toc::CANONICAL;
     private ?array $tocData = null;
 
+    public function __construct()
+    {
+
+        parent::__construct();
+
+        /**
+         * Toc is only stored in metadata dokuwiki
+         */
+        $this->setReadStore(MetadataDokuWikiStore::class);
+        $this->setWriteStore(MetadataDokuWikiStore::class);
+
+    }
 
     public static function createForRequestedPage(): Toc
     {
@@ -264,7 +277,7 @@ EOF;
         return $this->tocData !== null;
     }
 
-    static     public function getDataType(): string
+    static public function getDataType(): string
     {
         return DataType::ARRAY_VALUE;
     }
