@@ -118,7 +118,8 @@ class Call
         "p_close",
         "nest", // seen as enclosing footnotes
         "hr",
-        "rss"
+        "rss",
+        "preformatted" // code block
     );
 
     /**

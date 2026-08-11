@@ -84,7 +84,7 @@ class ArrayCaseInsensitive implements ArrayAccess, \Iterator, Countable
     }
 
 
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         if (is_string($offset)) $offset = strtolower($offset);
         $sourceOffset = $this->_keyMapping[$offset] ?? null;
@@ -100,7 +100,7 @@ class ArrayCaseInsensitive implements ArrayAccess, \Iterator, Countable
     }
 
 
-    public function current()
+    public function current(): mixed
     {
         return $this->iterator->current();
     }
@@ -110,7 +110,7 @@ class ArrayCaseInsensitive implements ArrayAccess, \Iterator, Countable
         $this->iterator->next();
     }
 
-    public function key()
+    public function key(): string|int|null
     {
         return $this->iterator->key();
     }
