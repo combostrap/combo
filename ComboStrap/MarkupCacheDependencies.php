@@ -402,7 +402,7 @@ class MarkupCacheDependencies
 
     private function getHostData(): string
     {
-        return $_SERVER['HTTP_HOST'] . $_SERVER['SERVER_PORT'];
+        return ($_SERVER['HTTP_HOST'] ?? "") . ($_SERVER['SERVER_PORT'] ?? "");
     }
 
 }

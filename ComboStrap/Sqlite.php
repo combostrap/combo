@@ -118,14 +118,14 @@ class Sqlite
         $adapter->setUseNativeAlter(true);
 
         list($databaseName, $databaseDefinitionDir) = self::getDatabaseNameAndDefinitionDirectory($databaseName);
-        $init = $sqlitePlugin->init($databaseName, $databaseDefinitionDir);
-        if (!$init) {
+        try {
+            $adapter = new SQLiteDB($databaseName, $databaseDefinitionDir, $sqlitePlugin);
+        } catch (\Exception $e) {
             $message = "Unable to initialize Sqlite";
             throw new ExceptionSqliteNotAvailable($message);
         }
         // regexp implementation
         // https://stackoverflow.com/questions/5071601/how-do-i-use-regex-in-a-sqlite-query/18484596#18484596
-        $adapter = $sqlitePlugin->getAdapter();
         $regexFunctioName = 'regexp';
         $regexpClosure = function ($pattern, $data, $delimiter = '~', $modifiers = 'isuS') {
             if (isset($pattern, $data) === true) {

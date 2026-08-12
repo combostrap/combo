@@ -21,6 +21,7 @@ use ComboStrap\Web\Url;
 use ComboStrap\Web\UrlEndpoint;
 use DateTime;
 use dokuwiki\ChangeLog\ChangeLog;
+use dokuwiki\Search\Indexer;
 use Exception;
 use renderer_plugin_combo_analytics;
 
@@ -610,7 +611,7 @@ class MarkupPath extends PathAbs implements ResourceCombo, Path
         try {
             $ACT = "show";
             $ID = $this->getPathObject()->toWikiPath()->getWikiId();
-            idx_addPage($ID);
+            (new Indexer())->addPage($ID, false);
         } finally {
             $ID = $keep;
             $ACT = $keepACT;
