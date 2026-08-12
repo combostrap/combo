@@ -8,6 +8,7 @@ use ComboStrap\ExecutionContext;
 use ComboStrap\HeadingTag;
 use ComboStrap\MarkupPath;
 use ComboStrap\Outline;
+use ComboStrap\SlotSystem;
 use ComboStrap\WikiPath;
 
 class action_plugin_combo_instructionspostprocessing extends DokuWiki_Action_Plugin
@@ -77,16 +78,21 @@ class action_plugin_combo_instructionspostprocessing extends DokuWiki_Action_Plu
             $isFragment = $fetcherMarkup->isFragment() === true;
             try {
                 $executingPath = $fetcherMarkup->getRequestedExecutingPath();
+                $executingMarkupPath = MarkupPath::createPageFromPathObject($executingPath);
             } catch (ExceptionNotFound $e) {
-                $executingPath = null;
+                $executingMarkupPath = null;
             }
         } catch (ExceptionNotFound $e) {
+
+            /**
+             * Not in a normal run with our main execution point
+             */
 
             /**
              * Not on admin pages
              */
             $action = $executionContext->getExecutingAction();
-            if($action===ExecutionContext::ADMIN_ACTION){
+            if ($action === ExecutionContext::ADMIN_ACTION) {
                 return;
             }
 
@@ -100,27 +106,31 @@ class action_plugin_combo_instructionspostprocessing extends DokuWiki_Action_Plu
             $isFragment = true;
             try {
                 $executingId = $executionContext->getExecutingWikiId();
+                $executingPath = WikiPath::createMarkupPathFromId($executingId);
+                $executingMarkupPath = MarkupPath::createPageFromPathObject($executingPath);
 
                 /**
                  * In preview mode, this is always a `fragment run`
                  * * otherwise we get warning on the outline because the heading should start with heading 1 or 2, not 3
                  * * and this is used in {@link \ComboStrap\Parser::parseMarkupToHandler()}
+                 *
+                 * For code triggered via bin/indexer.php (cron/CLI)
+                 * This is a fragment if this is not a slot
                  */
                 if ($executionContext->getExecutingAction() !== ExecutionContext::PREVIEW_ACTION) {
 
-                    $isSlot = MarkupPath::createPageFromPathObject($requestedPath)->isSlot();
-                    if ($isSlot === false) {
-                        if ($executingId === $requestedPath->getWikiId()) {
-                            $isFragment = false;
-                        }
+                    if (!$executingMarkupPath->isSlot()) {
+                        $isFragment = false;
                     }
 
                 }
-                $executingPath = WikiPath::createMarkupPathFromId($executingId);
+
             } catch (ExceptionNotFound $e) {
                 //
             }
+
         }
+
 
         /**
          * Fragment execution
@@ -139,11 +149,6 @@ class action_plugin_combo_instructionspostprocessing extends DokuWiki_Action_Plu
          * (add outline section, ...)
          */
         $callStack = CallStack::createFromHandler($handler);
-        if ($executingPath !== null) {
-            $executingMarkupPath = MarkupPath::createPageFromPathObject($executingPath);
-        } else {
-            $executingMarkupPath = null;
-        }
         $outline = Outline::createFromCallStack($callStack, $executingMarkupPath, $isFragment);
         $handler->calls = $outline->toHtmlSectionOutlineCalls();
         /**
