@@ -3,7 +3,7 @@
 ## About
 
 This directory contains all `Bootstrap` related resources such as JavaScript and CSS files used
-by [ComboStrap](https://combostrap.com)
+by [ComboStrap](https://combowiki.combostrap.com)
 
 If you want to bring your own custom Css file, check
 the [custom Bootstrap article](https://combowiki.combostrap.com/custom/bootrstap)
@@ -17,7 +17,7 @@ In a nutshell, if you already have your CSS file:
 ## Files
 
 * `bootstrapxxx.json` is a metadata file with all official bootstrap information
-* [bootstrapCustom.json] is a metadata file with the [ComboStrap](https://combostrap.com) 16 grid theme.
+* [bootstrapCustom.json] is a metadata file with the [ComboStrap](https://combowiki.combostrap.com) 16 grid theme.
 * There is one subdirectory by `Bootstrap` release such as [4.5.0](./4.5.0)
 
 ## Jquery

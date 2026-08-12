@@ -12,7 +12,7 @@ use ComboStrap\Site;
  *
  * https://www.dokuwiki.org/devel:manifest
  *
- * @see <a href="https://combostrap.com/manifest">manifest</a>
+ * @see <a href="https://combowiki.combostrap.com/manifest">manifest</a>
  *
  * [[doku>devel:manifest|webmanifest]]
  * https://developer.mozilla.org/en-US/docs/Web/Manifest

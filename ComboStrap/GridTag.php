@@ -69,7 +69,7 @@ class GridTag
      * change this value
      * but because of the new grid system, it has been deprecated
      * We therefore don't get the grid total columns value from strap
-     * @see {@link https://combostrap.com/dynamic_grid Dynamic Grid }
+     * @see {@link https://combowiki.combostrap.com/dynamic_grid Dynamic Grid }
      */
     public const GRID_TOTAL_COLUMNS = 12;
     public const TAGS = [GridTag::TAG, GridTag::ROW_TAG];

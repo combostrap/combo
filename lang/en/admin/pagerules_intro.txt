@@ -1,7 +1,7 @@
 
 ===== Introduction =====
 
-This page permits you to create [[https://combostrap.com/page/rules|page rules]].
+This page permits you to create [[https://combowiki.combostrap.com/page/rules|page rules]].
 
 They are rules that are used to redirect a [[doku>pagename|DokuWiki ID]] based on a pattern to:
 

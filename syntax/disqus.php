@@ -10,7 +10,7 @@ use ComboStrap\PluginUtility;
 
 /**
  * Disqus integration
- * https://combostrap.com/disqus
+ * https://combowiki.combostrap.com/disqus
  */
 class syntax_plugin_combo_disqus extends DokuWiki_Syntax_Plugin
 {

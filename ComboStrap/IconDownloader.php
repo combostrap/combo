@@ -18,7 +18,7 @@ require_once(__DIR__ . '/PluginUtility.php');
 /**
  * Class Icon
  * @package ComboStrap
- * @see https://combostrap.com/icon
+ * @see https://combowiki.combostrap.com/icon
  *
  *
  * Material design does not have a repository structure where we can extract the location

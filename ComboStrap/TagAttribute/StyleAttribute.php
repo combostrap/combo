@@ -61,7 +61,7 @@ class StyleAttribute
     /**
      * Add class for user styling
      * See
-     * https://combostrap.com/styling/userstyle#class
+     * https://combowiki.combostrap.com/styling/userstyle#class
      * @param TagAttributes $tagAttributes
      */
     public static function addStylingClass(TagAttributes &$tagAttributes)

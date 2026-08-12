@@ -98,7 +98,7 @@ EOF;
 
         /**
          * Old
-         * https://combostrap.com/release/deprecated/toggle
+         * https://combowiki.combostrap.com/release/deprecated/toggle
          * @deprecated
          */
         $collapse = "toggleTargetId";
@@ -126,7 +126,7 @@ EOF;
         /**
          * Toggle state
          * @deprecated
-         * https://combostrap.com/release/deprecated/toggle
+         * https://combowiki.combostrap.com/release/deprecated/toggle
          */
         $collapsed = self::COLLAPSED;
         if ($attributes->hasComponentAttribute($collapsed)) {

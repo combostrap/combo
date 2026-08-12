@@ -41,7 +41,7 @@ class action_plugin_combo_pagesystemmutation extends DokuWiki_Action_Plugin
         /**
          *
          * And To delete sidebar (cache) cache when a page was modified in a namespace
-         * https://combostrap.com/sideslots
+         * https://combowiki.combostrap.com/sideslots
          */
         $controller->register_hook('IO_WIKIPAGE_WRITE', 'BEFORE', $this, 'createFileSystemMutation', array());
 

@@ -707,7 +707,7 @@ class PluginUtility
      * Add default border attributes
      * to see a border
      * Doc
-     * https://combostrap.com/styling/color#border_color
+     * https://combowiki.combostrap.com/styling/color#border_color
      * @param TagAttributes $tagAttributes
      */
     private

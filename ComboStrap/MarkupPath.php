@@ -31,7 +31,7 @@ use renderer_plugin_combo_analytics;
  * A markup is a logical unit that represents a markup file.
  *
  * It has its own file system {@link MarkupFileSystem} explained in the
- * https://combostrap.com/page/system (or system.txt file).
+ * https://combowiki.combostrap.com/page/system (or system.txt file).
  * ie the {@link Path::getParent()} is not the same than on an normal file system.
  *
  * This should be an extension of {@link WikiPath} but for now, we are not extending {@link WikiPath}

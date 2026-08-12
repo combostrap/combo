@@ -10,7 +10,7 @@
 <text lead>Your slogan</text>
 
 <text width="350px">
-A elevator text that brings your offers 
+A elevator text that brings your offers
 and explains your missions
 </text>
 </box>
@@ -20,9 +20,9 @@ and explains your missions
 <box width="25%" text-color="secondary">
 **Get Started** \\
 [[:slot_footer?do=edit|Edit this footer]] \\
-[[https://combostrap.com/docs/how-to-configure-and-get-started-with-a-combostrap-website-m3i8vga8|Get Started]] \\
-[[https://combostrap.com/combostrap-documentation-mqltri27|Docs]] \\
-[[https://combostrap.com/how-to-use-the-combostrap-platform-0oqwozv8|HowTo]] \\
+[[https://combowiki.combostrap.com/docs/how-to-configure-and-get-started-with-a-combostrap-website-m3i8vga8|Get Started]] \\
+[[https://combowiki.combostrap.com/combostrap-documentation-mqltri27|Docs]] \\
+[[https://combowiki.combostrap.com/how-to-use-the-combostrap-platform-0oqwozv8|HowTo]] \\
 </box>
 
 <!-- A box that takes 25% of the space to add links about yourself or your company-->

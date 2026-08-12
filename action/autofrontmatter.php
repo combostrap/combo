@@ -46,8 +46,8 @@ class action_plugin_combo_autofrontmatter extends DokuWiki_Action_Plugin
 ---json
 {
     "canonical":"{$canonical}",
-    "title":"A [[https://combostrap.com/frontmatter|frontmatter]] title shown on the Search Engine Result Pages",
-    "description":"A [[https://combostrap.com/frontmatter|frontmatter]] description shown on the Search Engine Result Pages"
+    "title":"A [[https://combowiki.combostrap.com/frontmatter|frontmatter]] title shown on the Search Engine Result Pages",
+    "description":"A [[https://combowiki.combostrap.com/frontmatter|frontmatter]] description shown on the Search Engine Result Pages"
 }
 ---
 EOF;

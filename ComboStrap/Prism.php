@@ -223,7 +223,7 @@ EOD;
         if ($attributes->getLogicalTag() != null) {
             $logicalTag = $attributes->getLogicalTag();
         }
-        // for the https://combostrap.com/styling/userstyle
+        // for the https://combowiki.combostrap.com/styling/userstyle
         $attributes->setLogicalTag($logicalTag . "-container");
 
         /**
