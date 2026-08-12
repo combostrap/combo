@@ -1,15 +1,15 @@
 
-# Combo
+# ComboWiki (Combo DokuWiki Plugin)
 
 > Volatile WebSite Generator based on Easy Markup File, Bootstrap Styled, and the power of a Wiki Platform
 
 ![ComboStrap - Easy Markup WebSite Generator](resources/images/banner-combostrap.png "combostrap website bootstrap dokuwiki")
 
-[![Build Status](https://travis-ci.com/ComboStrap/combo.svg?branch=main)](https://travis-ci.com/ComboStrap/combo)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)
 
 ## About
 
-[ComboStrap](https://combowiki.combostrap.com) the publication platform, provides:
+[ComboWiki](https://combowiki.combostrap.com) the publication platform, provides:
 
   * [Markdown like UI Components (Bootstrap based)](https://combowiki.combostrap.com/ui/components)
   * [Easy Styling](https://combowiki.combostrap.com/styling)
