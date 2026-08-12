@@ -1,6 +1,6 @@
 # Release
 
-* Change the date in the [plugin.info](plugin.info.txt)
+* Change the date in the [plugin.info](../../plugin.info.txt)
 * Commit
 * Create a Release on [GitHub](https://github.com/combostrap/combo/releases) that points to the release page
   of https://combowiki.combostrap.com
