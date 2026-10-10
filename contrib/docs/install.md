@@ -2,9 +2,9 @@
 
 ## Install PHP
 
-* Install php7.4 on debian with
+* Install php on debian with
   the [sury repo](https://github.com/oerdnj/deb.sury.org/wiki/Frequently-Asked-Questions#how-to-enable-the-debsuryorg-repository)
-* https://packages.sury.org/php/pool/main/p/php7.4/
+* ie https://packages.sury.org/php/pool/main/p/php8.2/
 
 ```bash
 curl -sSL https://packages.sury.org/php/README.txt | sudo bash -x
@@ -32,24 +32,33 @@ cat /etc/php/8.2/mods-available/xdebug.ini
     * and `_test\phpunit.xml`
 
 ```bash
+# make your root code directory
+mkdir ~/code/combostrap
+# cd into it
+cd ~/code/combostrap
+# clone it
 git clone https://github.com/dokuwiki/dokuwiki combo
+# go into the combo dokuwiki instance
 cd combo
+# further in the doc, this directory is called the dokuwiki_home
+DOKUWIKI_HOME=~/code/combostrap
+# check the stable version
 git checkout stable
 ```
 
 ## Clone Combo
 
 ```bash
-cd dokuwiki_home/lib/plugins/
+cd "$DOKUWIKI_HOME/lib/plugins/"
 git clone git@github.com:ComboStrap/combo
 ```
 
 ## Clone the dependent plugins
 
-* Clone the dependent plugins found in [requirements](requirements.txt)
+* Clone the dependent plugins found in [requirements](../../requirements.txt)
 
 ```bash
-cd dokuwiki_home/lib/plugins/
+cd "$DOKUWIKI_HOME/lib/plugins/"
 git clone https://github.com/cosmocode/sqlite sqlite
 git clone https://github.com/michitux/dokuwiki-plugin-move/ move
 git clone https://github.com/dokufreaks/plugin-include include
@@ -62,21 +71,21 @@ git clone https://github.com/alexlehm/dokuwiki-plugin-gtm googletagmanager
 If you are from the combostrap organisation:
 
 ```bash
-cd dokuwiki_home/lib/plugins/combo
+cd "$DOKUWIKI_HOME/lib/plugins/combo"
 git clone git@github.com:ComboStrap/combo_test.git _test
 ```
 
 ## Install Node dependency
 
 ```bash
-cd dokuwiki_home/lib/plugins/combo
+cd "$DOKUWIKI_HOME/lib/plugins/combo"
 npm install
 ```
 
 ## Install phpunit
 
 ```bash
-cd dokuwiki_home/_test
+cd "$DOKUWIKI_HOME/_test"
 composer install
 ```
 
@@ -86,7 +95,7 @@ composer install
     * add `lib/plugins/combo` as a registered root (Intellij> Version Control > Directory Mapping)
     * Check that Set it as a source root
 
-Following [](https://www.jetbrains.com/help/phpstorm/how-to-use-wsl-development-environment-in-product.html#open-a-project-in-wsl)
+Following [WSL env in JetBrains](https://www.jetbrains.com/help/phpstorm/how-to-use-wsl-development-environment-in-product.html#open-a-project-in-wsl)
 
 * Install the plugin PHP Remote Interpreter (for WSL Support)
 * Add Php Cli Interpreter on WSL. Intellij > Settings > Php > Cli Interpreter
@@ -100,7 +109,7 @@ Get-NetFirewallProfile -Name Public | Get-NetFirewallRule | where DisplayName -I
 * Intellij > Settings > Php > Test Framework
 
 ```yaml
-Use_autoloader: dokuwiki_home/lib/plugins/combo/vendor/autoload.php
+Use_autoloader: $DOKUWIKI_HOME/lib/plugins/combo/vendor/autoload.php
 Use_default_configuration_file: combo/_test/phpunit.xml
 Use_default_bootstrap_file: combo/lib/plugins/combo/_test/bootstrap.php
 ```
