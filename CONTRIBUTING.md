@@ -25,7 +25,7 @@ It's used by the [new installer](https://www.patreon.com/posts/new-extension-116
 docker run \
   --name combo \
   -d \
-  -p 8082:80 \
+  -p 8182:80 \
   --user 1000:1000 \
   -e DOKU_DOCKER_ENV=dev \
   -e DOKU_DOCKER_ACL_POLICY='public' \
