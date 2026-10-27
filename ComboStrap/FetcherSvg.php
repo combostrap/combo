@@ -1420,8 +1420,12 @@ class FetcherSvg extends IFetcherLocalImage
                     $value = $tagAttributes->getValueAndRemove($svgAttribute);
                     try {
                         $color = ColorRgb::createFromString($value);
-                    } catch (ExceptionBadArgument $e) {
-                        LogUtility::error("The $svgAttribute value ($value) of the svg ($this) is not an valid color", self::CANONICAL);
+                    } catch (\Throwable $e) {
+                        # \Throwable $e to handle all cases
+                        $displayValue = is_scalar($value) || $value === null
+                            ? (string) $value
+                            : get_debug_type($value);
+                        LogUtility::error("The $svgAttribute value ($displayValue) of the svg ($this) is not an valid color", self::CANONICAL);
                         continue 2;
                     }
                     $this->setRequestedColor($color);
